@@ -1,8 +1,8 @@
 
-#define JOY_1_RX 34
-#define JOY_1_RY 35
-#define JOY_2_RX 36
-#define JOY_2_RY 39
+#define JOY_1_RX_PIN 34
+#define JOY_1_RY_PIN 35
+#define JOY_2_RX_PIN 36
+#define JOY_2_RY_PIN 39
 
 void setup() {
   Serial.begin(9600);

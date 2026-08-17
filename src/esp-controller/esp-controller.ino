@@ -1,16 +1,21 @@
 #include <WiFi.h>
 
-#define LED_PIN 33
+// Joystick pins
+#define JOY_1_RX_PIN 34
+#define JOY_1_RY_PIN 35
+#define JOY_2_RX_PIN 36
+#define JOY_2_RY_PIN 39
 
 const char* ssid = "ESP32_Server";
 const char* password = "12345678";
+
 const char* serverIP = "192.168.4.1";
 const int serverPort = 5000;
 
 WiFiClient client;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   // Connect to server ESP32's Wi-Fi
   WiFi.begin(ssid, password);
@@ -35,25 +40,28 @@ void setup() {
   else {
     Serial.println("TCP connection failed");
   }
-
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
 }
 
 void loop() {
-  if (client.available()) {
-    String message = client.readStringUntil('\n');
-    message.trim();
 
-    Serial.print("Received: ");
-    Serial.println(message);
+  if (client.connected()) {
 
-    if (message == "button") {
-      digitalWrite(LED_PIN, HIGH);
+    // Read joystick
+    int x1 = analogRead(JOY_1_RX_PIN);
+
+    // Convert joystick position to angle
+    int joyAngle = map(x1, 0, 4095, 0, 180);
+
+    // Determine command
+    if (joyAngle > 100) {
+      client.println("right");
     }
-    else if (message == "no button") {
-      digitalWrite(LED_PIN, LOW);
+    else if (joyAngle < 80) {
+      client.println("left");
     }
+
+    Serial.print("Joystick angle: ");
+    Serial.println(joyAngle);
   }
 
   delay(100);

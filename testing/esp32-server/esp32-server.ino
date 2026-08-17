@@ -1,4 +1,3 @@
-#include <secrets.h>
 #include <WiFi.h>
 
 #define BUTTON_PIN 32

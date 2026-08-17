@@ -2,6 +2,7 @@
 #include "ServoControl.h"
 
 const char* ssid = "ESP32_Server";
+// Pass has to be >8 chars long for some reason
 const char* password = "12345678";
 
 WiFiServer server(5000);

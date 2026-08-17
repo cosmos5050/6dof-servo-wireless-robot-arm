@@ -9,19 +9,19 @@ void setup() {
 }
 
 void loop() {
-  int x1 = analogRead(JOY_1_RX);
-  int y1 = analogRead(JOY_1_RY);
-  int x2 = analogRead(JOY_2_RX);
-  int y2 = analogRead(JOY_2_RY);
+  int x1 = analogRead(JOY_1_RX_PIN);
+  int y1 = analogRead(JOY_1_RY_PIN);
+  int x2 = analogRead(JOY_2_RX_PIN);
+  int y2 = analogRead(JOY_2_RY_PIN);
 
   Serial.print("Joystick 1\tX: ");
   Serial.print(x1);
   Serial.print("\tY: ");
-  Serial.println(y1);
-  Serial.print("Joystick 2\tX: ");
+  Serial.print(y1);
+  Serial.print("\t\tJoystick 2\tX: ");
   Serial.print(x2);
   Serial.print("\tY: ");
   Serial.println(y2);
 
-  delay(100);
+  delay(1000);
 }

@@ -4,6 +4,7 @@
 const char* ssid = "ESP32_Server";
 // Pass has to be >8 chars long for some reason
 const char* password = "12345678";
+const int angleIncrementVal = 5;
 
 WiFiServer server(5000);
 
@@ -36,29 +37,64 @@ void loop() {
 
   Serial.println("Client connected");
 
-  int currentServoAngle = 90;
-  setServoAngle(0, currentServoAngle);
+  // Array for servo angles
+  int servoAngleArr[6] = {90, 90, 90, 90, 90, 90};
 
   while (client.connected()) {
-
     if (client.available()) {
+      // Store data transmitted from client/controller
+      String packet = client.readStringUntil('\n');
+      // Remove whitespace and end and start
+      packet.trim();
+      Serial.println(packet);
 
-      String receivedData = client.readStringUntil('\n');
-      receivedData.trim();
-
-      if (receivedData == "right") {
-        currentServoAngle = constrain(currentServoAngle + 5, 0, 180);
+      // Decode packet
+      for (int i = 0; i < packet.length(); i+=2) {
+        switch (packet[i]) {
+          case 'A':
+            if (packet[i+1] == '0') {
+              servoAngleArr[0] = constrain(servoAngleArr[0] + angleIncrementVal, 0, 180);
+            } else if (packet[i+1] == '1') {
+              servoAngleArr[0] = constrain(servoAngleArr[0] - angleIncrementVal, 0, 180);
+            }
+            break;
+          case 'B':
+            if (packet[i+1] == '0') {
+              servoAngleArr[1] = constrain(servoAngleArr[1] + angleIncrementVal, 0, 180);
+            } else if (packet[i+1] == '1') {
+              servoAngleArr[1] = constrain(servoAngleArr[1] - angleIncrementVal, 0, 180);
+            }
+            break;
+          case 'C':
+            if (packet[i+1] == '0') {
+              servoAngleArr[2] = constrain(servoAngleArr[2] + angleIncrementVal, 0, 180);
+            } else if (packet[i+1] == '1') {
+              servoAngleArr[2] = constrain(servoAngleArr[2] - angleIncrementVal, 0, 180);
+            }
+            break;
+          case 'D':
+            if (packet[i+1] == '0') {
+              servoAngleArr[3] = constrain(servoAngleArr[3] + angleIncrementVal, 0, 180);
+            } else if (packet[i+1] == '1') {
+              servoAngleArr[3] = constrain(servoAngleArr[3] - angleIncrementVal, 0, 180);
+            }
+            break;
+          // case "E":
+          //   if (packet[i+1] == "0") {
+          //     servoAngleArr[0] = constrain(servoAngleArr[3] + angleIncrementVal, 0, 180);
+          //   } else if (packet[i+1] == "1") {
+          //     servoAngleArr[0] = constrain(servoAngleArr[3] + angleIncrementVal, 0, 180);
+          //   }
+        }
       }
-      else if (receivedData == "left") {
-        currentServoAngle = constrain(currentServoAngle - 5, 0, 180);
+
+      // Set servo angles
+      for (int i = 0; i < 4; i++) {
+        setServoAngle(i, servoAngleArr[i]);
       }
-
-setServoAngle(0, currentServoAngle);
-
-      setServoAngle(0, currentServoAngle);
     }
 
-    delay(100);
+    delay(10);
   }
 
   client.stop();

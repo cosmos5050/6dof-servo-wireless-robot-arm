@@ -1,4 +1,3 @@
-
 #define JOY_1_RX_PIN 34
 #define JOY_1_RY_PIN 35
 #define JOY_2_RX_PIN 36

@@ -17,16 +17,16 @@ const char* serverIP = "192.168.4.1";
 const int serverPort = 5000;
 
 // Recorded joystick adc centre vals
-const int joy1RxCentreMax = 3105;
-const int joy1RxCentreMin = 3019;
-const int joy1RyCentreMax = 3017;
-const int joy1RyCentreMin = 2898;
-const int joy2RxCentreMax = 2973;
-const int joy2RxCentreMin = 2939;
-const int joy2RyCentreMax = 3049;
-const int joy2RyCentreMin = 3007;
-// Val for deadband around recorded cetre vals
-const int deadBand = 20;
+const int joy1RxCentreMax = 1657;
+const int joy1RxCentreMin = 1634;
+const int joy1RyCentreMax = 1693;
+const int joy1RyCentreMin = 1677;
+const int joy2RxCentreMax = 1627;
+const int joy2RxCentreMin = 1615;
+const int joy2RyCentreMax = 1654;
+const int joy2RyCentreMin = 1637;
+// Val for deadband around recorded centre vals
+const int deadBand = 200;
 
 WiFiClient client;
 
@@ -64,6 +64,8 @@ void setup() {
 void loop() {
   // Packet for transmittal
   // Format AxBxCxDxEx
+  // x: 0:up/down, 1:down/up, 2:nothing
+  // A,B,C,D joy axes, E: 0:close gripper, 1:open gripper, 3:nothing
   String toTransmit = "";
   
   if (client.connected()) {
@@ -116,18 +118,33 @@ void loop() {
     }
     // Buttons
     toTransmit += "E";
-    if (digitalRead(BUTTON_OPEN_PIN) == LOW) {
+    if (digitalRead(BUTTON_CLOSE_PIN) == LOW) {
       toTransmit += "0";
-    } else if (digitalRead(BUTTON_CLOSE_PIN) == LOW) {
+    } else if (digitalRead(BUTTON_OPEN_PIN) == LOW) {
       toTransmit += "1";
     } else {
       toTransmit += "2";
     }
 
+    // Debug
+    Serial.print("X1: ");
+    Serial.print(x1);
+
+    Serial.print(" Y1: ");
+    Serial.print(y1);
+
+    Serial.print(" X2: ");
+    Serial.print(x2);
+
+    Serial.print(" Y2: ");
+    Serial.print(y2);
+
+    Serial.print(" | Packet: ");
     Serial.println(toTransmit);
+    
     // Transmit
     client.println(toTransmit);
   }
 
-  delay(100);
+  delay(10);
 }

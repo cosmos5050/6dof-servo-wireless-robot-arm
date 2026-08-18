@@ -6,8 +6,10 @@
 #define JOY_2_RX_PIN 36
 #define JOY_2_RY_PIN 39
 // Button pins
-#define BUTTON_OPEN_PIN 26
-#define BUTTON_CLOSE_PIN 14
+#define BUTTON_GRIP_ROT_L_PIN 25
+#define BUTTON_GRIP_ROT_R_PIN 26
+#define BUTTON_GRIP_CLOSE_PIN 14
+#define BUTTON_GRIP_OPEN_PIN 33
 
 const char* ssid = "ESP32_Server";
 // Pass has to be >8 chars long for some reason
@@ -31,7 +33,7 @@ const int deadBand = 200;
 WiFiClient client;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Connect to server ESP32's Wi-Fi
   WiFi.begin(ssid, password);
@@ -57,15 +59,18 @@ void setup() {
     Serial.println("TCP connection failed");
   }
 
-  pinMode(BUTTON_OPEN_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_CLOSE_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_GRIP_ROT_L_PIN, INPUT);
+  pinMode(BUTTON_GRIP_ROT_R_PIN, INPUT);
+  pinMode(BUTTON_GRIP_CLOSE_PIN, INPUT);
+  pinMode(BUTTON_GRIP_OPEN_PIN, INPUT);
 }
 
 void loop() {
   // Packet for transmittal
   // Format AxBxCxDxEx
-  // x: 0:up/down, 1:down/up, 2:nothing
-  // A,B,C,D joy axes, E: 0:close gripper, 1:open gripper, 3:nothing
+  // A-D: joystick axes
+  // E: grip rotation, 0 = left, 1 = right, 2 = neutral
+  // F: grip, 0 = close, 1 = open, 2 = neutral
   String toTransmit = "";
   
   if (client.connected()) {
@@ -118,9 +123,17 @@ void loop() {
     }
     // Buttons
     toTransmit += "E";
-    if (digitalRead(BUTTON_CLOSE_PIN) == LOW) {
+    if (digitalRead(BUTTON_GRIP_ROT_L_PIN) == LOW) {
       toTransmit += "0";
-    } else if (digitalRead(BUTTON_OPEN_PIN) == LOW) {
+    } else if (digitalRead(BUTTON_GRIP_ROT_R_PIN) == LOW) {
+      toTransmit += "1";
+    } else {
+      toTransmit += "2";
+    }
+    toTransmit += "F";
+    if (digitalRead(BUTTON_GRIP_CLOSE_PIN) == LOW) {
+      toTransmit += "0";
+    } else if (digitalRead(BUTTON_GRIP_OPEN_PIN) == LOW) {
       toTransmit += "1";
     } else {
       toTransmit += "2";
@@ -146,5 +159,5 @@ void loop() {
     client.println(toTransmit);
   }
 
-  delay(10);
+  delay(20);
 }

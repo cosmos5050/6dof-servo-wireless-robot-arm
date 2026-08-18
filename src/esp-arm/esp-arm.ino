@@ -9,7 +9,7 @@ const int angleIncrementVal = 5;
 WiFiServer server(5000);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Create own Wi-Fi network for controller ESP32 to join
   WiFi.softAP(ssid, password);
@@ -79,22 +79,30 @@ void loop() {
               servoAngleArr[3] = constrain(servoAngleArr[3] - angleIncrementVal, 0, 180);
             }
             break;
-          // case "E":
-          //   if (packet[i+1] == "0") {
-          //     servoAngleArr[0] = constrain(servoAngleArr[3] + angleIncrementVal, 0, 180);
-          //   } else if (packet[i+1] == "1") {
-          //     servoAngleArr[0] = constrain(servoAngleArr[3] + angleIncrementVal, 0, 180);
-          //   }
+          case 'E':
+            if (packet[i+1] == '0') {
+              servoAngleArr[4] = constrain(servoAngleArr[4] + angleIncrementVal, 0, 180);
+            } else if (packet[i+1] == '1') {
+              servoAngleArr[4] = constrain(servoAngleArr[4] - angleIncrementVal, 0, 180);
+            }
+            break;
+          case 'F':
+            if (packet[i+1] == '0') {
+              servoAngleArr[5] = constrain(servoAngleArr[5] + angleIncrementVal, 0, 180);
+            } else if (packet[i+1] == '1') {
+              servoAngleArr[5] = constrain(servoAngleArr[5] - angleIncrementVal, 0, 180);
+            }
+            break;
         }
       }
 
       // Set servo angles
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 6; i++) {
         setServoAngle(i, servoAngleArr[i]);
       }
     }
 
-    delay(10);
+    delay(1);
   }
 
   client.stop();
